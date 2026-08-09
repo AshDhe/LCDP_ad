@@ -1,0 +1,36 @@
+.lcdp-page-cle-admin .lcdp-admin-page-content,
+#lcdp-cle-onglets-slot,
+.lcdp-cle-admin__table,
+.lcdp-cle-admin__edition {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.lcdp-cle-admin__entete {
+  margin: 0 0 var(--lcdp-space-4);
+}
+
+.lcdp-cle-admin__titre {
+  margin: 0;
+}
+
+.lcdp-cle-admin__barre-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 var(--lcdp-space-4);
+}
+
+.lcdp-cle-admin__edition[hidden],
+.lcdp-cle-admin__table[hidden],
+.lcdp-cle-admin__barre-actions[hidden] {
+  display: none !important;
+}
+
+.lcdp-cle-admin__chargement {
+  margin: 0;
+  padding: var(--lcdp-space-4);
+  border: 1px solid var(--lcdp-color-border);
+  border-radius: var(--lcdp-radius-medium);
+  background: var(--lcdp-color-surface-soft);
+}
