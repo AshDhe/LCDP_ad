@@ -537,6 +537,8 @@
     return {
       idmembre: "",
       brac: "",
+      serial: "",
+      brightd: 58,
       actif: false,
       date: "",
       datemaj: ""
@@ -742,6 +744,24 @@
         maxlength: 100
       },
       {
+        name: "serial",
+        label: "Serial",
+        type: "text",
+        value: item?.serial || "",
+        required: false,
+        validationNative: true,
+        maxlength: 100
+      },
+      {
+        name: "brightd",
+        label: "Brightd",
+        type: "number",
+        value: Number(item?.brightd || 58),
+        required: true,
+        validationNative: true,
+        min: 1
+      },
+      {
         name: "actif",
         label: "Actif",
         type: "checkbox",
@@ -858,6 +878,12 @@
       brac: String(
         form.elements.namedItem("brac")?.value || ""
       ).trim(),
+      serial: String(
+        form.elements.namedItem("serial")?.value || ""
+      ).trim(),
+      brightd: Number(
+        form.elements.namedItem("brightd")?.value || 58
+      ),
       actif:
         form.elements.namedItem("actif")?.checked === true,
       date: String(
