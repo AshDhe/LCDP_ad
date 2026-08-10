@@ -39,6 +39,23 @@
       optionKey: "idmembre",
       optionLabel: "Membre",
       boutonAjouter: "Ajouter un Brac"
+    },
+    bluetooth: {
+      key: "bluetooth",
+      label: "Clés Bluetooth",
+      resource: "cles-bluetooth",
+      tableSlotId: "lcdp-cle-bluetooth-table-slot",
+      editionSlotId: "lcdp-cle-bluetooth-edition-slot",
+      actionsId: "lcdp-cle-bluetooth-actions",
+      ajouterId: "lcdp-cle-bluetooth-ajouter",
+      codeKey: "nomble",
+      codeLabel: "Clé Bluetooth",
+      idKey: "idclebluetooth",
+      path: "/cle-bluetooth",
+      optionPath: "/options/bracelets",
+      optionKey: "idbracelet",
+      optionLabel: "Bracelet",
+      boutonAjouter: "Ajouter une clé Bluetooth"
     }
   });
 
@@ -224,6 +241,8 @@
   }
 
   function configurerOnglets(racine) {
+    assurerTroisiemeOnglet(racine);
+
     const boutons = Array.from(
       racine.querySelectorAll("[data-lcdp-onglet]")
     );
@@ -231,7 +250,7 @@
       racine.querySelectorAll("[data-lcdp-panneau-onglet]")
     );
 
-    if (boutons.length < 2 || panneaux.length < 2) {
+    if (boutons.length < 3 || panneaux.length < 3) {
       throw new Error("Structure des onglets incomplète.");
     }
 
@@ -254,6 +273,59 @@
       "Membres",
       false
     );
+
+    configurerOnglet(
+      boutons[2],
+      panneaux[2],
+      "bluetooth",
+      "Clés Bluetooth",
+      false
+    );
+  }
+
+  function assurerTroisiemeOnglet(racine) {
+    let boutons = Array.from(
+      racine.querySelectorAll("[data-lcdp-onglet]")
+    );
+    let panneaux = Array.from(
+      racine.querySelectorAll("[data-lcdp-panneau-onglet]")
+    );
+
+    if (boutons.length >= 3 && panneaux.length >= 3) {
+      return;
+    }
+
+    if (boutons.length < 1 || panneaux.length < 1) {
+      throw new Error("Structure des onglets incomplète.");
+    }
+
+    const modeleBouton = boutons[boutons.length - 1];
+    const modelePanneau = panneaux[panneaux.length - 1];
+    const parentBouton = modeleBouton.parentElement;
+    const parentPanneau = modelePanneau.parentElement;
+
+    if (!parentBouton || !parentPanneau) {
+      throw new Error("Structure des onglets incomplète.");
+    }
+
+    while (boutons.length < 3) {
+      const bouton = modeleBouton.cloneNode(true);
+      bouton.removeAttribute("id");
+      bouton.removeAttribute("aria-controls");
+      bouton.removeAttribute("aria-selected");
+      bouton.removeAttribute("tabindex");
+      parentBouton.appendChild(bouton);
+      boutons.push(bouton);
+    }
+
+    while (panneaux.length < 3) {
+      const panneau = modelePanneau.cloneNode(true);
+      panneau.removeAttribute("id");
+      panneau.removeAttribute("aria-labelledby");
+      panneau.hidden = true;
+      parentPanneau.appendChild(panneau);
+      panneaux.push(panneau);
+    }
   }
 
   function configurerOnglet(bouton, panneau, key, label, actif) {
@@ -402,7 +474,12 @@
         endpoint: endpointCleAdmin(),
         resource: contexte.resource,
         pageSize: 100,
-        initialSortKey: contexte.key === "parcs" ? "dptmt" : "nom",
+        initialSortKey:
+          contexte.key === "parcs"
+            ? "dptmt"
+            : contexte.key === "membres"
+              ? "nom"
+              : "brac",
         initialSortDirection: "asc",
         interactiveColumns: [contexte.codeKey],
         interactiveLabel: "Modifier " + contexte.codeLabel,
@@ -534,13 +611,22 @@
       };
     }
 
+    if (contexte.key === "membres") {
+      return {
+        idmembre: "",
+        brac: "",
+        serial: "",
+        brightd: 58,
+        actif: false,
+        date: "",
+        datemaj: ""
+      };
+    }
+
     return {
-      idmembre: "",
-      brac: "",
-      serial: "",
-      brightd: 58,
+      idbracelet: "",
+      nomble: "",
       actif: false,
-      date: "",
       datemaj: ""
     };
   }
@@ -659,6 +745,11 @@
     }
 
     form.addEventListener("submit", enregistrer);
+
+    if (contexte.key === "bluetooth") {
+      initialiserNomBleDepuisBracelet(form, options);
+    }
+
     form.querySelector("#lcdp-cle-retour")
       ?.addEventListener(
         "click",
@@ -724,6 +815,36 @@
       ];
     }
 
+    if (contexte.key === "bluetooth") {
+      return [
+        {
+          name: "idbracelet",
+          label: "Bracelet",
+          type: "select",
+          value: item?.idbracelet || "",
+          options: optionsSelect,
+          required: true,
+          validationNative: true
+        },
+        {
+          name: "nomble",
+          label: "Nom BLE",
+          type: "text",
+          value: item?.nomble || "",
+          required: true,
+          validationNative: true,
+          maxlength: 100
+        },
+        {
+          name: "actif",
+          label: "Actif",
+          type: "checkbox",
+          checked: item?.actif === true,
+          checkboxLabel: "Clé Bluetooth active"
+        }
+      ];
+    }
+
     return [
       {
         name: "idmembre",
@@ -777,6 +898,42 @@
         validationNative: true
       }
     ];
+  }
+
+  function initialiserNomBleDepuisBracelet(form, options) {
+    if (modeEdition !== "create") {
+      return;
+    }
+
+    const selectBracelet =
+      form.elements.namedItem("idbracelet");
+    const champNomBle =
+      form.elements.namedItem("nomble");
+
+    if (!selectBracelet || !champNomBle) {
+      return;
+    }
+
+    function proposerNom() {
+      if (String(champNomBle.value || "").trim()) {
+        return;
+      }
+
+      const option = options.find(
+        (item) =>
+          String(item?.value || "") ===
+          String(selectBracelet.value || "")
+      );
+
+      const brac = String(option?.label || "").trim();
+
+      if (brac) {
+        champNomBle.value = "LCDP-" + brac;
+      }
+    }
+
+    selectBracelet.addEventListener("change", proposerNom);
+    proposerNom();
   }
 
   async function enregistrer(event) {
@@ -868,6 +1025,19 @@
         instal: String(
           form.elements.namedItem("instal")?.value || ""
         ).trim()
+      };
+    }
+
+    if (contexte.key === "bluetooth") {
+      return {
+        idbracelet: String(
+          form.elements.namedItem("idbracelet")?.value || ""
+        ).trim(),
+        nomble: String(
+          form.elements.namedItem("nomble")?.value || ""
+        ).trim(),
+        actif:
+          form.elements.namedItem("actif")?.checked === true
       };
     }
 
