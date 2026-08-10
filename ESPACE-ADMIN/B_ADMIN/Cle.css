@@ -34,3 +34,17 @@
   border-radius: var(--lcdp-radius-medium);
   background: var(--lcdp-color-surface-soft);
 }
+
+/* Page Clé : les trois onglets restent sur une seule ligne. */
+.lcdp-page-cle-admin #lcdp-cle-onglets-slot [data-lcdp-wraper-onglets-navigation] {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+}
+
+.lcdp-page-cle-admin #lcdp-cle-onglets-slot [data-lcdp-onglet] {
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+}
+
