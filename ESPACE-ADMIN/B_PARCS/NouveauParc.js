@@ -216,7 +216,7 @@
         formSlot.hidden = false;
 
         const premierChamp = formSlot.querySelector(
-          '[data-lcdp-nouveauparc-field="nom"]'
+          '[data-lcdp-insertparcs-field="nom"]'
         );
 
         premierChamp?.focus();
@@ -338,7 +338,7 @@
           const nouvelleLigne = await ajouterLigneParc(fields);
           nouvelleLigne
             .querySelector(
-              '[data-lcdp-nouveauparc-field="nom"]'
+              '[data-lcdp-insertparcs-field="nom"]'
             )
             ?.focus();
         });
@@ -444,7 +444,7 @@
       function lireParcsDuFormulaire(form) {
         const lignes = Array.from(
           form.querySelectorAll(
-            "[data-lcdp-nouveauparc-ligne]"
+            "[data-lcdp-insertparcs-ligne]"
           )
         );
 
@@ -454,11 +454,11 @@
           const ligne = lignes[index];
 
           const nomInput = ligne.querySelector(
-            '[data-lcdp-nouveauparc-field="nom"]'
+            '[data-lcdp-insertparcs-field="nom"]'
           );
 
           const dptmtInput = ligne.querySelector(
-            '[data-lcdp-nouveauparc-field="dptmt"]'
+            '[data-lcdp-insertparcs-field="dptmt"]'
           );
 
           const nom = String(nomInput?.value || "").trim();
@@ -578,7 +578,7 @@
       function reinitialiserFormulaire(form) {
         const lignes = Array.from(
           form.querySelectorAll(
-            "[data-lcdp-nouveauparc-ligne]"
+            "[data-lcdp-insertparcs-ligne]"
           )
         );
 
@@ -596,7 +596,7 @@
 
         premiereLigne
           ?.querySelector(
-            '[data-lcdp-nouveauparc-field="nom"]'
+            '[data-lcdp-insertparcs-field="nom"]'
           )
           ?.focus();
       }
